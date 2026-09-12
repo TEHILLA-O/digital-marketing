@@ -1,0 +1,48 @@
+@page "/statements"
+@inject LedgerXApi Api
+
+<h2>Statements</h2>
+<label>Account</label>
+<select @bind="accountId">
+    @foreach (var a in accounts)
+    {
+        <option value="@a.AccountId">@a.DisplayName</option>
+    }
+</select>
+<button @onclick="Load">View statement</button>
+@if (statement is not null)
+{
+    <div class="card">
+        <p>Opening @statement.OpeningBalance.ToString("N2") · Closing @statement.ClosingBalance.ToString("N2")</p>
+    </div>
+    <table>
+        <thead><tr><th>Posted</th><th>Reference</th><th>Side</th><th>Amount</th><th>Balance</th></tr></thead>
+        <tbody>
+        @foreach (var line in statement.Lines)
+        {
+            <tr>
+                <td>@line.PostedAt.LocalDateTime.ToString("g")</td>
+                <td>@line.Reference</td>
+                <td>@line.Side</td>
+                <td>@line.Amount.ToString("N2")</td>
+                <td>@line.BalanceAfter.ToString("N2")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<AccountResponse> accounts = [];
+    private Guid accountId;
+    private StatementResponse? statement;
+
+    protected override async Task OnInitializedAsync()
+    {
+        accounts = await Api.AccountsAsync(CancellationToken.None) ?? [];
+        if (accounts.Count > 0) accountId = accounts[0].AccountId;
+    }
+
+    private async Task Load() =>
+        statement = await Api.StatementAsync(accountId, CancellationToken.None);
+}

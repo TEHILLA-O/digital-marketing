@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>LedgerX.Identity.Domain</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\LedgerX.SharedKernel\LedgerX.SharedKernel.csproj" />
+  </ItemGroup>
+</Project>

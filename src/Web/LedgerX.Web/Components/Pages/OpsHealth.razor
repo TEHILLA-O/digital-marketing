@@ -1,0 +1,30 @@
+@page "/ops/health"
+@inject LedgerXApi Api
+
+<h2>System health</h2>
+<table>
+    <thead><tr><th>Component</th><th>Status</th></tr></thead>
+    <tbody>
+    @foreach (var row in rows)
+    {
+        <tr><td>@row.Name</td><td>@row.Status</td></tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<(string Name, string Status)> rows = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var ct = CancellationToken.None;
+        rows =
+        [
+            ("Identity API", await Api.HealthAsync("identity", "/health/ready", ct) ?? "unknown"),
+            ("Accounts API", await Api.HealthAsync("accounts", "/health/ready", ct) ?? "unknown"),
+            ("Payments API", await Api.HealthAsync("payments", "/health/ready", ct) ?? "unknown"),
+            ("Ledger API", await Api.HealthAsync("ledger", "/health/ready", ct) ?? "unknown"),
+            ("Audit worker", await Api.HealthAsync("audit", "/health/ready", ct) ?? "unknown")
+        ];
+    }
+}

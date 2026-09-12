@@ -1,0 +1,44 @@
+@page "/login"
+@inject LedgerXApi Api
+@inject SessionState Session
+@inject NavigationManager Nav
+
+<div class="auth card">
+    <h1>Sign in</h1>
+    <p class="muted">Demo customers: demo.customer@ledgerx.local, bob.customer@ledgerx.local. Staff: admin@ledgerx.local, auditor@ledgerx.local. Password comes from LEDGERX_DEMO_PASSWORD (default documented in README).</p>
+    <label>Email</label>
+    <input @bind="email" />
+    <label>Password</label>
+    <input type="password" @bind="password" />
+    <p class="error">@error</p>
+    <div class="row">
+        <button @onclick="Submit">Sign in</button>
+        <a class="btn secondary" href="/register">Create account</a>
+    </div>
+</div>
+
+@code {
+    private string email = "demo.customer@ledgerx.local";
+    private string password = "LedgerX-Demo-2026!";
+    private string? error;
+
+    private async Task Submit()
+    {
+        try
+        {
+            var token = await Api.LoginAsync(new LoginRequest(email, password), CancellationToken.None);
+            if (token is null)
+            {
+                error = "Sign-in failed.";
+                return;
+            }
+
+            Session.SignIn(token);
+            Nav.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+    }
+}

@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="FluentAssertions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BuildingBlocks\LedgerX.SharedKernel\LedgerX.SharedKernel.csproj" />
+    <ProjectReference Include="..\..\src\Accounts\LedgerX.Accounts.Domain\LedgerX.Accounts.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Payments\LedgerX.Payments.Domain\LedgerX.Payments.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Ledger\LedgerX.Ledger.Domain\LedgerX.Ledger.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Identity\LedgerX.Identity.Domain\LedgerX.Identity.Domain.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,50 @@
+@page "/accounts/{AccountId:guid}"
+@inject LedgerXApi Api
+
+@if (account is not null)
+{
+    <div class="card">
+        <h2>@account.DisplayName</h2>
+        <p>@account.SortCode @account.AccountNumber · @account.AccountType · @account.Status</p>
+        <div class="balance">@account.Currency @account.ProjectedBalance.ToString("N2")</div>
+        <p class="muted">Balances are projected from the immutable double-entry ledger.</p>
+        <div class="row">
+            <button @onclick="Deposit">Demo deposit £100</button>
+            <button class="secondary" @onclick="Withdraw">Withdraw £50</button>
+        </div>
+        <p class="error">@error</p>
+        <p class="ok">@info</p>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid AccountId { get; set; }
+    private AccountResponse? account;
+    private string? error;
+    private string? info;
+
+    protected override async Task OnInitializedAsync() =>
+        account = await Api.AccountAsync(AccountId, CancellationToken.None);
+
+    private async Task Deposit()
+    {
+        try
+        {
+            var result = await Api.DepositAsync(new CreateDepositRequest(AccountId, 100m, "GBP", "Demo deposit"), Guid.NewGuid().ToString("N"), CancellationToken.None);
+            info = $"Deposit {result?.Status} {result?.Reference}";
+            account = await Api.AccountAsync(AccountId, CancellationToken.None);
+        }
+        catch (Exception ex) { error = ex.Message; }
+    }
+
+    private async Task Withdraw()
+    {
+        try
+        {
+            var result = await Api.WithdrawAsync(new CreateWithdrawalRequest(AccountId, 50m, "GBP", "Demo withdrawal"), Guid.NewGuid().ToString("N"), CancellationToken.None);
+            info = $"Withdrawal {result?.Status} {result?.Reference}";
+            account = await Api.AccountAsync(AccountId, CancellationToken.None);
+        }
+        catch (Exception ex) { error = ex.Message; }
+    }
+}

@@ -1,0 +1,42 @@
+@page "/beneficiaries"
+@inject LedgerXApi Api
+
+<h2>Beneficiaries</h2>
+<div class="card">
+    <label>Display name</label>
+    <input @bind="name" />
+    <label>Destination account id</label>
+    <input @bind="destination" />
+    <button @onclick="Add">Add beneficiary</button>
+    <p class="error">@error</p>
+</div>
+<table>
+    <thead><tr><th>Name</th><th>Account</th><th>Sort code</th></tr></thead>
+    <tbody>
+    @foreach (var b in items)
+    {
+        <tr><td>@b.DisplayName</td><td>@b.AccountNumber</td><td>@b.SortCode</td></tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<BeneficiaryResponse> items = [];
+    private string name = "";
+    private string destination = "";
+    private string? error;
+
+    protected override async Task OnInitializedAsync() =>
+        items = await Api.BeneficiariesAsync(CancellationToken.None) ?? [];
+
+    private async Task Add()
+    {
+        if (!Guid.TryParse(destination, out var id)) { error = "Enter a valid account id."; return; }
+        try
+        {
+            var created = await Api.AddBeneficiaryAsync(new CreateBeneficiaryRequest(name, id), CancellationToken.None);
+            if (created is not null) items.Add(created);
+        }
+        catch (Exception ex) { error = ex.Message; }
+    }
+}

@@ -1,0 +1,38 @@
+@page "/register"
+@inject LedgerXApi Api
+@inject SessionState Session
+@inject NavigationManager Nav
+
+<div class="auth card">
+    <h1>Register</h1>
+    <label>First name</label>
+    <input @bind="first" />
+    <label>Last name</label>
+    <input @bind="last" />
+    <label>Email</label>
+    <input @bind="email" />
+    <label>Password (12+ characters, mixed case, digit)</label>
+    <input type="password" @bind="password" />
+    <p class="error">@error</p>
+    <button @onclick="Submit">Create account</button>
+</div>
+
+@code {
+    private string first = "";
+    private string last = "";
+    private string email = "";
+    private string password = "";
+    private string? error;
+
+    private async Task Submit()
+    {
+        try
+        {
+            var token = await Api.RegisterAsync(new RegisterRequest(email, password, first, last), CancellationToken.None);
+            if (token is null) { error = "Registration failed."; return; }
+            Session.SignIn(token);
+            Nav.NavigateTo("/");
+        }
+        catch (Exception ex) { error = ex.Message; }
+    }
+}

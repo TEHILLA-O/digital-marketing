@@ -1,0 +1,32 @@
+@page "/ops/transfers"
+@page "/ops/failed"
+@inject LedgerXApi Api
+@inject NavigationManager Nav
+
+<h2>@(failed ? "Failed payments" : "Transfers")</h2>
+<table>
+    <thead><tr><th>Reference</th><th>Kind</th><th>Amount</th><th>Status</th><th>Reason</th></tr></thead>
+    <tbody>
+    @foreach (var t in items)
+    {
+        <tr>
+            <td>@t.Reference</td>
+            <td>@t.Kind</td>
+            <td>@t.Currency @t.Amount.ToString("N2")</td>
+            <td>@t.Status</td>
+            <td>@t.FailureReason</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<TransferResponse> items = [];
+    private bool failed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        failed = Nav.Uri.Contains("/failed", StringComparison.OrdinalIgnoreCase);
+        items = (await Api.AdminTransfersAsync(failed ? "Failed" : null, CancellationToken.None))?.Items.ToList() ?? [];
+    }
+}

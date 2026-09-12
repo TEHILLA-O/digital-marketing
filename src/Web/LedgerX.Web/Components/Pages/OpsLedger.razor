@@ -1,0 +1,66 @@
+@page "/ops/ledger"
+@page "/ops/ledger/{JournalId:guid}"
+@inject LedgerXApi Api
+
+<h2>Ledger explorer</h2>
+<p class="muted">Every posted journal must satisfy SUM(debits) = SUM(credits). Lines are immutable; corrections are reversals.</p>
+<div class="grid">
+    <div class="card">
+        <h3>Journals</h3>
+        <table>
+            <thead><tr><th>Reference</th><th>Status</th><th>Debits</th><th>Credits</th></tr></thead>
+            <tbody>
+            @foreach (var j in journals)
+            {
+                <tr>
+                    <td><a href="/ops/ledger/@j.JournalId">@j.Reference</a></td>
+                    <td>@j.Status</td>
+                    <td>@j.TotalDebits.ToString("N2")</td>
+                    <td>@j.TotalCredits.ToString("N2")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    @if (selected is not null)
+    {
+        <div class="card">
+            <h3>@selected.Reference</h3>
+            <p>@selected.Description</p>
+            <p>Balanced: <strong>@(selected.IsBalanced ? "yes" : "NO")</strong></p>
+            <table>
+                <thead><tr><th>Side</th><th>Account</th><th>Amount</th><th>Narrative</th></tr></thead>
+                <tbody>
+                @foreach (var line in selected.Lines)
+                {
+                    <tr>
+                        <td>@line.Side</td>
+                        <td>@line.AccountCode</td>
+                        <td>@line.Amount.ToString("N2")</td>
+                        <td>@line.Narrative</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public Guid JournalId { get; set; }
+    private List<JournalResponse> journals = [];
+    private JournalResponse? selected;
+
+    protected override async Task OnInitializedAsync()
+    {
+        journals = (await Api.JournalsAsync(CancellationToken.None))?.Items.ToList() ?? [];
+        if (JournalId != Guid.Empty)
+        {
+            selected = await Api.JournalAsync(JournalId, CancellationToken.None);
+        }
+        else
+        {
+            selected = journals.FirstOrDefault();
+        }
+    }
+}

@@ -1,0 +1,26 @@
+@page "/ops/audit"
+@inject LedgerXApi Api
+
+<h2>Audit log</h2>
+<table>
+    <thead><tr><th>When</th><th>Action</th><th>Actor</th><th>Entity</th><th>Correlation</th></tr></thead>
+    <tbody>
+    @foreach (var a in items)
+    {
+        <tr>
+            <td>@a.Timestamp.LocalDateTime.ToString("g")</td>
+            <td>@a.Action</td>
+            <td>@a.ActorId</td>
+            <td>@a.EntityType @a.EntityId</td>
+            <td>@a.CorrelationId</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<AuditRecordResponse> items = [];
+
+    protected override async Task OnInitializedAsync() =>
+        items = (await Api.AuditAsync(CancellationToken.None))?.Items.ToList() ?? [];
+}

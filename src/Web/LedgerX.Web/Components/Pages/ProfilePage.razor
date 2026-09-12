@@ -1,0 +1,20 @@
+@page "/profile"
+@inject LedgerXApi Api
+
+<h2>Profile</h2>
+@if (profile is not null)
+{
+    <div class="card">
+        <p><strong>@profile.FirstName @profile.LastName</strong></p>
+        <p>@profile.Email</p>
+        <p>Status: @profile.Status</p>
+        <p>Roles: @string.Join(", ", profile.Roles)</p>
+    </div>
+}
+
+@code {
+    private ProfileResponse? profile;
+
+    protected override async Task OnInitializedAsync() =>
+        profile = await Api.MeAsync(CancellationToken.None);
+}

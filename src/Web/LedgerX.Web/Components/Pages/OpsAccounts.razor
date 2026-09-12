@@ -1,0 +1,50 @@
+@page "/ops/accounts"
+@inject LedgerXApi Api
+
+<h2>Accounts</h2>
+<table>
+    <thead><tr><th>Customer</th><th>Name</th><th>Number</th><th>Status</th><th>Balance</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var a in items)
+    {
+        <tr>
+            <td>@a.CustomerId.ToString()[..8]</td>
+            <td>@a.DisplayName</td>
+            <td>@a.AccountNumber</td>
+            <td>@a.Status</td>
+            <td>@a.ProjectedBalance.ToString("N2")</td>
+            <td>
+                @if (a.Status == "Frozen")
+                {
+                    <button class="secondary" @onclick="() => Unfreeze(a.AccountId)">Unfreeze</button>
+                }
+                else
+                {
+                    <button class="secondary" @onclick="() => Freeze(a.AccountId)">Freeze</button>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<p class="error">@error</p>
+
+@code {
+    private List<AccountResponse> items = [];
+    private string? error;
+
+    protected override async Task OnInitializedAsync() =>
+        items = (await Api.AdminAccountsAsync(CancellationToken.None))?.Items.ToList() ?? [];
+
+    private async Task Freeze(Guid id)
+    {
+        try { await Api.FreezeAsync(id, "Operations freeze", CancellationToken.None); await OnInitializedAsync(); }
+        catch (Exception ex) { error = ex.Message; }
+    }
+
+    private async Task Unfreeze(Guid id)
+    {
+        try { await Api.UnfreezeAsync(id, CancellationToken.None); await OnInitializedAsync(); }
+        catch (Exception ex) { error = ex.Message; }
+    }
+}

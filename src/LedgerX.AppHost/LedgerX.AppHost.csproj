@@ -1,0 +1,22 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.5.3">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>ledgerx-apphost-dev-0001</UserSecretsId>
+    <SuppressAspire010>true</SuppressAspire010>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+    <PackageReference Include="Aspire.Hosting.Redis" />
+    <PackageReference Include="Aspire.Hosting.Kafka" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Identity\LedgerX.Identity.Api\LedgerX.Identity.Api.csproj" />
+    <ProjectReference Include="..\Accounts\LedgerX.Accounts.Api\LedgerX.Accounts.Api.csproj" />
+    <ProjectReference Include="..\Payments\LedgerX.Payments.Api\LedgerX.Payments.Api.csproj" />
+    <ProjectReference Include="..\Ledger\LedgerX.Ledger.Api\LedgerX.Ledger.Api.csproj" />
+    <ProjectReference Include="..\Workers\LedgerX.Notification.Worker\LedgerX.Notification.Worker.csproj" />
+    <ProjectReference Include="..\Workers\LedgerX.Audit.Worker\LedgerX.Audit.Worker.csproj" />
+    <ProjectReference Include="..\Workers\LedgerX.Projection.Worker\LedgerX.Projection.Worker.csproj" />
+    <ProjectReference Include="..\Web\LedgerX.Web\LedgerX.Web.csproj" />
+  </ItemGroup>
+</Project>

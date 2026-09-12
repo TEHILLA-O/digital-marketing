@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <RootNamespace>LedgerX.Web</RootNamespace>
+    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\LedgerX.Contracts\LedgerX.Contracts.csproj" />
+    <ProjectReference Include="..\..\LedgerX.ServiceDefaults\LedgerX.ServiceDefaults.csproj" />
+  </ItemGroup>
+</Project>

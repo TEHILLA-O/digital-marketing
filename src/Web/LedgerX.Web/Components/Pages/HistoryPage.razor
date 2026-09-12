@@ -1,0 +1,27 @@
+@page "/history"
+@inject LedgerXApi Api
+
+<h2>Transaction history</h2>
+<table>
+    <thead><tr><th>Reference</th><th>Kind</th><th>Amount</th><th>Status</th><th>Created</th><th>Completed</th></tr></thead>
+    <tbody>
+    @foreach (var t in items)
+    {
+        <tr>
+            <td>@t.Reference</td>
+            <td>@t.Kind</td>
+            <td>@t.Currency @t.Amount.ToString("N2")</td>
+            <td>@t.Status</td>
+            <td>@t.CreatedAt.LocalDateTime.ToString("g")</td>
+            <td>@(t.CompletedAt?.LocalDateTime.ToString("g") ?? "—")</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<TransferResponse> items = [];
+
+    protected override async Task OnInitializedAsync() =>
+        items = (await Api.TransfersAsync(null, CancellationToken.None))?.Items.ToList() ?? [];
+}

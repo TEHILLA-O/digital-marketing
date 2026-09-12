@@ -1,0 +1,62 @@
+@page "/transfer"
+@inject LedgerXApi Api
+
+<h2>Transfer money</h2>
+<div class="card">
+    <label>From account</label>
+    <select @bind="source">
+        @foreach (var a in accounts)
+        {
+            <option value="@a.AccountId">@a.DisplayName (@a.ProjectedBalance.ToString("N2"))</option>
+        }
+    </select>
+    <label>To account</label>
+    <select @bind="destination">
+        @foreach (var b in beneficiaries)
+        {
+            <option value="@b.LinkedBankAccountId">@b.DisplayName @b.AccountNumber</option>
+        }
+    </select>
+    <label>Amount (GBP)</label>
+    <input type="number" step="0.01" @bind="amount" />
+    <label>Description</label>
+    <input @bind="description" />
+    <p class="muted">Repeat submissions use the same Idempotency-Key until you click again (a new key is generated each send).</p>
+    <button @onclick="Send">Send transfer</button>
+    <p class="error">@error</p>
+    <p class="ok">@info</p>
+</div>
+
+@code {
+    private List<AccountResponse> accounts = [];
+    private List<BeneficiaryResponse> beneficiaries = [];
+    private Guid source;
+    private Guid destination;
+    private decimal amount = 500m;
+    private string description = "Internal transfer";
+    private string? error;
+    private string? info;
+
+    protected override async Task OnInitializedAsync()
+    {
+        accounts = await Api.AccountsAsync(CancellationToken.None) ?? [];
+        beneficiaries = await Api.BeneficiariesAsync(CancellationToken.None) ?? [];
+        if (accounts.Count > 0) source = accounts[0].AccountId;
+        var first = beneficiaries.FirstOrDefault(b => b.LinkedBankAccountId is not null);
+        if (first?.LinkedBankAccountId is { } dest) destination = dest;
+    }
+
+    private async Task Send()
+    {
+        error = null;
+        try
+        {
+            var result = await Api.TransferAsync(
+                new CreateTransferRequest(source, destination, amount, "GBP", description),
+                Guid.NewGuid().ToString("N"),
+                CancellationToken.None);
+            info = $"{result?.Reference} is {result?.Status}. Journal {result?.JournalId}";
+        }
+        catch (Exception ex) { error = ex.Message; }
+    }
+}

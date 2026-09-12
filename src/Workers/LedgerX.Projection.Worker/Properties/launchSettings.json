@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "LedgerX.Projection.Worker": {
+      "commandName": "Project",
+      "applicationUrl": "http://localhost:5107",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

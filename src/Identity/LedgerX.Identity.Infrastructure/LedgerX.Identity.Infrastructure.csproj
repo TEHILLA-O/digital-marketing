@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>LedgerX.Identity.Infrastructure</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LedgerX.Identity.Application\LedgerX.Identity.Application.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\LedgerX.Eventing\LedgerX.Eventing.csproj" />
+    <ProjectReference Include="..\..\LedgerX.ServiceDefaults\LedgerX.ServiceDefaults.csproj" />
+  </ItemGroup>
+</Project>

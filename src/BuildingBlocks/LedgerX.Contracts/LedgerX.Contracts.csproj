@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>LedgerX.Contracts</RootNamespace>
+    <Description>Versioned integration events and cross-service DTOs.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LedgerX.SharedKernel\LedgerX.SharedKernel.csproj" />
+  </ItemGroup>
+</Project>

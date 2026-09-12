@@ -1,0 +1,28 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Restore
+        run: dotnet restore LedgerX.slnx
+      - name: Format check
+        run: dotnet format LedgerX.slnx --verify-no-changes --severity warn || true
+      - name: Build
+        run: dotnet build LedgerX.slnx --no-restore -c Release
+      - name: Unit and architecture tests
+        run: |
+          dotnet test tests/LedgerX.Domain.Tests/LedgerX.Domain.Tests.csproj -c Release --no-build
+          dotnet test tests/LedgerX.Application.Tests/LedgerX.Application.Tests.csproj -c Release --no-build
+          dotnet test tests/LedgerX.ArchitectureTests/LedgerX.ArchitectureTests.csproj -c Release --no-build
+      - name: Integration tests
+        run: dotnet test tests/LedgerX.IntegrationTests/LedgerX.IntegrationTests.csproj -c Release --no-build

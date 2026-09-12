@@ -1,0 +1,60 @@
+@page "/accounts"
+@inject LedgerXApi Api
+@inject SessionState Session
+
+<h2>Accounts</h2>
+<div class="card">
+    <div class="row">
+        <div>
+            <label>Display name</label>
+            <input @bind="name" />
+        </div>
+        <div>
+            <label>Type</label>
+            <select @bind="type">
+                <option>Current</option>
+                <option>Savings</option>
+            </select>
+        </div>
+        <div>
+            <label>&nbsp;</label>
+            <button @onclick="Open">Open account</button>
+        </div>
+    </div>
+    <p class="error">@error</p>
+</div>
+<table>
+    <thead><tr><th>Name</th><th>Number</th><th>Type</th><th>Status</th><th>Balance</th></tr></thead>
+    <tbody>
+    @foreach (var a in accounts)
+    {
+        <tr>
+            <td><a href="/accounts/@a.AccountId">@a.DisplayName</a></td>
+            <td>@a.SortCode @a.AccountNumber</td>
+            <td>@a.AccountType</td>
+            <td>@a.Status</td>
+            <td>@a.Currency @a.ProjectedBalance.ToString("N2")</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<AccountResponse> accounts = [];
+    private string name = "New account";
+    private string type = "Current";
+    private string? error;
+
+    protected override async Task OnInitializedAsync() =>
+        accounts = await Api.AccountsAsync(CancellationToken.None) ?? [];
+
+    private async Task Open()
+    {
+        try
+        {
+            var created = await Api.OpenAccountAsync(new OpenAccountRequest(type, "GBP", name), CancellationToken.None);
+            if (created is not null) accounts.Add(created);
+        }
+        catch (Exception ex) { error = ex.Message; }
+    }
+}

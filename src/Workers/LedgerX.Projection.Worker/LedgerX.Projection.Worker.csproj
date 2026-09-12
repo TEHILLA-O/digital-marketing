@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <RootNamespace>LedgerX.Projection.Worker</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Confluent.Kafka" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="StackExchange.Redis" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\LedgerX.Eventing\LedgerX.Eventing.csproj" />
+    <ProjectReference Include="..\..\LedgerX.ServiceDefaults\LedgerX.ServiceDefaults.csproj" />
+  </ItemGroup>
+</Project>

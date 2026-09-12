@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>LedgerX.Ledger.Application</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LedgerX.Ledger.Domain\LedgerX.Ledger.Domain.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\LedgerX.Contracts\LedgerX.Contracts.csproj" />
+  </ItemGroup>
+</Project>

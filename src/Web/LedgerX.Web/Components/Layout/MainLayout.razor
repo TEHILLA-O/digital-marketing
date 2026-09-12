@@ -1,0 +1,61 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject SessionState Session
+@inject NavigationManager Nav
+
+<div class="shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <strong>LedgerX</strong>
+            <span>Simulated banking</span>
+        </div>
+        @if (Session.IsAuthenticated)
+        {
+            <nav>
+                <a href="/">Dashboard</a>
+                <a href="/accounts">Accounts</a>
+                <a href="/transfer">Transfer</a>
+                <a href="/beneficiaries">Beneficiaries</a>
+                <a href="/history">History</a>
+                <a href="/statements">Statements</a>
+                <a href="/profile">Profile</a>
+                @if (Session.IsStaff)
+                {
+                    <div class="nav-label">Operations</div>
+                    <a href="/ops/customers">Customers</a>
+                    <a href="/ops/accounts">Accounts</a>
+                    <a href="/ops/transfers">Transfers</a>
+                    <a href="/ops/failed">Failed payments</a>
+                    <a href="/ops/ledger">Ledger explorer</a>
+                    <a href="/ops/audit">Audit log</a>
+                    <a href="/ops/health">System health</a>
+                }
+            </nav>
+            <button class="linkish" @onclick="SignOut">Sign out</button>
+        }
+    </aside>
+    <main class="content">
+        <header class="topbar">
+            <div>
+                <h1>@Title</h1>
+                <p class="muted">Educational simulation — not a regulated bank and not connected to real payment rails.</p>
+            </div>
+            <div class="who">@Session.DisplayName</div>
+        </header>
+        @Body
+    </main>
+</div>
+
+@code {
+    private string Title => "LedgerX";
+
+    protected override void OnInitialized() => Session.Changed += StateHasChanged;
+
+    public void Dispose() => Session.Changed -= StateHasChanged;
+
+    private void SignOut()
+    {
+        Session.SignOut();
+        Nav.NavigateTo("/login");
+    }
+}

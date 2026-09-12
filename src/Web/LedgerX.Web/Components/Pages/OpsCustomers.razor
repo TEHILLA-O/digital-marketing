@@ -1,0 +1,27 @@
+@page "/ops/customers"
+@inject LedgerXApi Api
+
+<h2>Customer search</h2>
+<div class="row">
+    <input @bind="query" placeholder="Name or email" />
+    <button @onclick="Search">Search</button>
+</div>
+<table>
+    <thead><tr><th>Name</th><th>Email</th><th>Status</th></tr></thead>
+    <tbody>
+    @foreach (var c in items)
+    {
+        <tr><td>@c.FirstName @c.LastName</td><td>@c.Email</td><td>@c.Status</td></tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    private string query = "";
+    private List<CustomerAdminResponse> items = [];
+
+    protected override Task OnInitializedAsync() => Search();
+
+    private async Task Search() =>
+        items = (await Api.CustomersAsync(query, CancellationToken.None))?.Items.ToList() ?? [];
+}

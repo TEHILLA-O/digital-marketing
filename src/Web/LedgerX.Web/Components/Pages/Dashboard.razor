@@ -1,0 +1,79 @@
+@page "/"
+@inject SessionState Session
+@inject LedgerXApi Api
+@inject NavigationManager Nav
+
+@if (!Session.IsAuthenticated)
+{
+    <p>Welcome to LedgerX. <a href="/login">Sign in</a> to continue.</p>
+}
+else
+{
+    <div class="grid">
+        <div class="card">
+            <h2>Total balance</h2>
+            <div class="balance">£ @total.ToString("N2")</div>
+        </div>
+        <div class="card">
+            <h2>Accounts</h2>
+            <div class="balance">@accounts.Count</div>
+        </div>
+        <div class="card">
+            <h2>Recent transfers</h2>
+            <div class="balance">@transfers.Count</div>
+        </div>
+    </div>
+
+    <h2 style="margin-top:1.5rem">Accounts</h2>
+    <table>
+        <thead><tr><th>Name</th><th>Number</th><th>Type</th><th>Status</th><th>Balance</th></tr></thead>
+        <tbody>
+        @foreach (var a in accounts)
+        {
+            <tr>
+                <td><a href="/accounts/@a.AccountId">@a.DisplayName</a></td>
+                <td>@a.SortCode @a.AccountNumber</td>
+                <td>@a.AccountType</td>
+                <td>@a.Status</td>
+                <td>@a.Currency @a.ProjectedBalance.ToString("N2")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <h2 style="margin-top:1.5rem">Recent transfers</h2>
+    <table>
+        <thead><tr><th>Reference</th><th>Kind</th><th>Amount</th><th>Status</th><th>When</th></tr></thead>
+        <tbody>
+        @foreach (var t in transfers.Take(8))
+        {
+            <tr>
+                <td>@t.Reference</td>
+                <td>@t.Kind</td>
+                <td>@t.Currency @t.Amount.ToString("N2")</td>
+                <td>@t.Status</td>
+                <td>@t.CreatedAt.LocalDateTime.ToString("g")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<AccountResponse> accounts = [];
+    private List<TransferResponse> transfers = [];
+    private decimal total;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Session.IsAuthenticated)
+        {
+            return;
+        }
+
+        accounts = await Api.AccountsAsync(CancellationToken.None) ?? [];
+        total = accounts.Sum(a => a.ProjectedBalance);
+        var page = await Api.TransfersAsync(null, CancellationToken.None);
+        transfers = page?.Items.ToList() ?? [];
+    }
+}

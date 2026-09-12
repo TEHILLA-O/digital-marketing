@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>LedgerX.SharedKernel</RootNamespace>
+    <Description>Shared domain primitives: money, results, strongly typed IDs, time.</Description>
+  </PropertyGroup>
+</Project>
